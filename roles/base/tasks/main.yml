@@ -1,0 +1,46 @@
+---
+
+# --- Debian / Ubuntu tasks ---
+- name: Ensure universe repo is enabled (Ubuntu/Debian)
+  apt_repository:
+    repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_lsb.codename }} universe"
+  when: ansible_os_family == "Debian"
+
+- name: Update apt cache and upgrade packages
+  apt:
+    update_cache: yes
+    upgrade: dist
+  when: ansible_os_family == "Debian"
+
+- name: Install common utilities (Debian/Ubuntu)
+  apt:
+    name:
+      - curl
+      - vim
+      - git
+      - unzip
+    state: present
+  when: ansible_os_family == "Debian"
+
+# --- RHEL / CentOS / Amazon Linux tasks ---
+- name: Update yum packages
+  yum:
+    name: "*"
+    state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install common utilities (RHEL/CentOS/Amazon Linux)
+  yum:
+    name:
+      - curl
+      - vim
+      - git
+      - unzip
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Enable EPEL repository (RHEL/CentOS/Amazon Linux)
+  yum:
+    name: epel-release
+    state: present
+  when: ansible_os_family == "RedHat"

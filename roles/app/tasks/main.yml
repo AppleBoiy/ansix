@@ -1,0 +1,41 @@
+---
+
+- name: Upload static website tarball
+  copy:
+    src: site.tar.gz
+    dest: /tmp/site.tar.gz
+    mode: '0644'
+
+- name: Extract static website
+  unarchive:
+    src: /tmp/site.tar.gz
+    dest: /var/www/html/
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+
+- name: Ensure proper ownership for all web files
+  file:
+    path: /var/www/html
+    owner: www-data
+    group: www-data
+    recurse: yes
+    state: directory   # applies to directories and subdirs
+
+- name: Ensure correct permissions for directories
+  file:
+    path: /var/www/html
+    state: directory
+    mode: '0755'
+    recurse: yes
+
+- name: Ensure correct permissions for files
+  find:
+    paths: /var/www/html
+    file_type: file
+  register: web_files
+
+- name: Set file permissions to 0644
+  file:
+    path: "{{ item.path }}"
+    mode: '0644'
+  loop: "{{ web_files.files }}"

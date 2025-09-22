@@ -1,0 +1,30 @@
+- name: Install NGINX
+  apt:
+    name: nginx
+    state: present
+
+- name: Ensure NGINX is running
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Copy custom nginx config
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart nginx
+
+- name: Test nginx configuration
+  command: nginx -t
+  register: nginx_test
+  changed_when: false
+
+- name: Restart nginx if config is valid
+  service:
+    name: nginx
+    state: restarted
+  when: nginx_test.rc == 0

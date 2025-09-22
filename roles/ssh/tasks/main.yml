@@ -1,0 +1,13 @@
+- name: Ensure .ssh directory exists
+  file:
+    path: /home/ubuntu/.ssh
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0700"
+
+- name: Add authorized key for ubuntu user
+  authorized_key:
+    user: ubuntu
+    state: present
+    key: "{{ lookup('file', 'my-key.pub') }}"

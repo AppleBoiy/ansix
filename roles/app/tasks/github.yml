@@ -1,0 +1,11 @@
+- name: Ensure git is installed
+  apt:
+    name: git
+    state: present
+
+- name: Clone website repository
+  git:
+    repo: "https://github.com/your-username/your-repo.git"
+    dest: /var/www/html/
+    version: main
+    force: yes
