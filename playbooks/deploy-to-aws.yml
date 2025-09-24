@@ -1,0 +1,56 @@
+---
+# First play: Provision EC2 infrastructure
+- name: Provision EC2 instance for web server
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - ../vars/aws-vars.yml
+  
+  roles:
+    - { role: aws, tags: ["provision"] }
+
+  post_tasks:
+    - name: Refresh inventory to make sure new instances exist in inventory
+      meta: refresh_inventory
+      tags: ["provision"]
+
+# Second play: Configure the newly created instance
+- name: Configure web server on EC2 instance  
+  hosts: webservers_dynamic
+  become: true
+  gather_facts: true
+  vars_files:
+    - aws-vars.yml
+
+  pre_tasks:
+    - name: Wait for system to become reachable
+      wait_for_connection:
+        timeout: 300
+      tags: ["configure"]
+
+    - name: Update package manager cache (yum)
+      yum:
+        update_cache: yes
+      when: ansible_os_family == "RedHat"
+      tags: ["configure"]
+
+  roles:
+    - { role: base, tags: ["configure", "base"] }
+    - { role: nginx, tags: ["configure", "nginx"] }
+    - { role: app, tags: ["configure", "app"] }
+
+  post_tasks:
+    - name: Display web server URL
+      debug:
+        msg: |
+          =========================================
+          Deployment Complete!
+          
+          Web server is now available at:
+          http://{{ ansible_host }}
+          
+          SSH access:
+          ssh -i {{ ansible_ssh_private_key_file }} {{ ansible_user }}@{{ ansible_host }}
+          =========================================
+      tags: ["configure"]

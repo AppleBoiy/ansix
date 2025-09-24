@@ -1,22 +1,41 @@
-Configuration Management
-------------------------
-Write an Ansible playbook to configure a Linux server.
+# ANSIX - Ansible Configuration Management
 
+Ansible project for Linux server configuration management with AWS EC2 provisioning capabilities.
 
-The goal of this project is to introduce you to the basics of configuration management using Ansible. You will write an Ansible playbook to configure a Linux server.
+## Quick Start
 
-Requirements
--------------------------
-If you have been doing the previous projects, you should already have a Linux server running. If not, setup a Linux server on DigitalOcean, AWS or another cloud provider.
+```bash
+# Local deployment
+make run
 
-You are required to write an Ansible playbook called setup.yml and create the following roles:
+# AWS deployment
+make aws-deploy
+```
 
-1. base — basic server setup (installs utilities, updates the server, installs fail2ban, etc.)
-2. nginx — installs and configures nginx
-3. app — uploads the given tarball of a static HTML website to the server and unzips it.
-4. ssh - adds the given public key to the server
+## Features
 
-Set up the inventory file inventory.ini to include the server you are going to configure When you run the playbook, it should run the roles above in sequence. You should also assign proper tags to the roles so that you can run only specific roles.
+- Multi-platform support (Ubuntu/Debian, RHEL/CentOS/Amazon Linux)
+- Role-based architecture with modular components
+- AWS EC2 integration with complete provisioning
+- Security-focused with proper permissions and access control
+- Tag-based execution for selective role deployment
 
+## Requirements
 
-challenge url: https://roadmap.sh/projects/configuration-management
+- Ansible >= 2.9
+- Python >= 3.6
+- AWS CLI (for AWS deployments)
+- Boto3/Botocore (for AWS operations)
+
+```bash
+ansible-galaxy collection install -r requirements.yml
+pip install boto3 botocore
+```
+
+## Documentation
+
+- [Project Documentation](docs/README.md) - Original requirements and setup
+- [AWS Setup Guide](docs/AWS-SETUP.md) - AWS deployment configuration
+- [WARP Guidelines](docs/WARP.md) - AI assistant integration
+
+Run `make help` for all available commands.

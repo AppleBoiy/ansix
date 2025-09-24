@@ -1,0 +1,51 @@
+# Ansible
+*.retry
+.ansible/
+ansible.log
+logs/
+
+# Variables and secrets
+vars/aws-vars.yml
+vars/*-vars.yml
+!vars/*.example
+!vars/*.sample
+group_vars/*/vault.yml
+host_vars/*/vault.yml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# SSH keys
+*.pem
+*.key
+!*.key.example
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

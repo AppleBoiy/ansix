@@ -1,0 +1,7 @@
+---
+# Ansible Galaxy requirements for AWS functionality
+collections:
+  - name: amazon.aws
+    version: ">=6.0.0"
+  - name: community.general
+    version: ">=6.0.0"

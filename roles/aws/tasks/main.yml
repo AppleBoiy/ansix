@@ -1,0 +1,83 @@
+---
+- name: Create EC2 key pair
+  amazon.aws.ec2_key:
+    name: "{{ ec2_key_name }}"
+    key_material: "{{ lookup('file', local_public_key_path) }}"
+    region: "{{ aws_region }}"
+    state: present
+  register: ec2_key
+
+- name: Create security group
+  amazon.aws.ec2_security_group:
+    name: "{{ security_group_name }}"
+    description: "{{ security_group_description }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: 0.0.0.0/0
+        rule_desc: "SSH access"
+      - proto: tcp
+        ports:
+          - 80
+        cidr_ip: 0.0.0.0/0
+        rule_desc: "HTTP access"
+      - proto: tcp
+        ports:
+          - 443
+        cidr_ip: 0.0.0.0/0
+        rule_desc: "HTTPS access"
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+        rule_desc: "All outbound traffic"
+    state: present
+  register: security_group
+
+- name: Launch EC2 instance
+  amazon.aws.ec2_instance:
+    name: "{{ ec2_instance_name }}"
+    image_id: "{{ ec2_image }}"
+    instance_type: "{{ ec2_instance_type }}"
+    key_name: "{{ ec2_key_name }}"
+    security_groups:
+      - "{{ security_group_name }}"
+    region: "{{ aws_region }}"
+    availability_zone: "{{ aws_availability_zone }}"
+    subnet_id: "{{ vpc_subnet_id if vpc_subnet_id else omit }}"
+    wait: true
+    wait_timeout: 600
+    tags: "{{ instance_tags }}"
+    state: present
+  register: ec2_instance
+
+- name: Wait for EC2 instance to be reachable via SSH
+  wait_for:
+    host: "{{ ec2_instance.instances[0].public_ip_address }}"
+    port: 22
+    delay: 60
+    timeout: 600
+    state: started
+  when: ec2_instance.instances | length > 0
+
+- name: Add EC2 instance to inventory
+  add_host:
+    name: "{{ ec2_instance.instances[0].public_ip_address }}"
+    groups: webservers_dynamic
+    ansible_host: "{{ ec2_instance.instances[0].public_ip_address }}"
+    ansible_user: "{{ ssh_user }}"
+    ansible_ssh_private_key_file: "{{ local_public_key_path | replace('.pub', '') }}"
+  when: ec2_instance.instances | length > 0
+
+- name: Display instance information
+  debug:
+    msg: |
+      EC2 Instance Created Successfully!
+      Instance ID: {{ ec2_instance.instances[0].instance_id }}
+      Public IP: {{ ec2_instance.instances[0].public_ip_address }}
+      Private IP: {{ ec2_instance.instances[0].private_ip_address }}
+      Instance Type: {{ ec2_instance.instances[0].instance_type }}
+      Key Name: {{ ec2_instance.instances[0].key_name }}
+      Security Groups: {{ ec2_instance.instances[0].security_groups | map(attribute='group_name') | list }}
+  when: ec2_instance.instances | length > 0
