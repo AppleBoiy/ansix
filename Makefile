@@ -12,11 +12,12 @@ help:
 	@echo "Available targets:"
 	@echo ""
 	@echo "Local Server Management:"
-	@echo "  run        - Run complete playbook on local servers"
-	@echo "  base       - Run base role only"
-	@echo "  nginx      - Run nginx role only"
-	@echo "  app        - Run app role only"
-	@echo "  ssh        - Run ssh role only"
+	@echo "  run        - Run complete deployment playbook"
+	@echo "  deploy     - Run deployment role (all components)"
+	@echo "  base       - Run base system configuration only"
+	@echo "  nginx      - Run nginx web server setup only"
+	@echo "  app        - Run application deployment only"
+	@echo "  ssh        - Run SSH configuration only"
 	@echo "  check      - Validate playbook syntax"
 	@echo "  dry-run    - Show what would change without applying"
 	@echo ""
@@ -33,9 +34,12 @@ help:
 	@echo "  clean      - Clean up temporary files"
 	@echo ""
 
-## Original targets for existing servers
+## Local server deployment
 run:
 	ansible-playbook -i $(INVENTORY) $(PLAYBOOK)
+
+deploy:
+	ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --tags "deploy"
 
 base:
 	ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --tags "base"

@@ -1,0 +1,54 @@
+---
+# Deployment Role
+# Handles complete server configuration and application deployment
+
+- name: Wait for system to become reachable
+  wait_for_connection:
+    timeout: 300
+  tags: ["deploy", "configure"]
+
+- name: Update package manager cache (yum)
+  yum:
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+  tags: ["deploy", "configure"]
+
+- name: Update package manager cache (apt)
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  tags: ["deploy", "configure"]
+
+- name: Include base system configuration
+  include_role:
+    name: base
+  tags: ["deploy", "configure", "base"]
+
+- name: Include SSH configuration
+  include_role:
+    name: ssh
+  tags: ["deploy", "configure", "ssh"]
+
+- name: Include web server configuration
+  include_role:
+    name: nginx
+  tags: ["deploy", "configure", "nginx"]
+
+- name: Include application deployment
+  include_role:
+    name: app
+  tags: ["deploy", "configure", "app"]
+
+- name: Display deployment completion message
+  debug:
+    msg: |
+      =========================================
+      Deployment Complete!
+      
+      Web server is now available at:
+      http://{{ ansible_host }}
+      
+      SSH access:
+      ssh -i {{ ansible_ssh_private_key_file | default('~/.ssh/id_rsa') }} {{ ansible_user }}@{{ ansible_host }}
+      =========================================
+  tags: ["deploy", "configure"]

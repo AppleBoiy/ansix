@@ -1,9 +1,7 @@
+---
 - name: Setup and configure web server
   hosts: webservers
   become: true
 
   roles:
-    - { role: base, tags: ["base"] }
-    - { role: nginx, tags: ["nginx"] }
-    - { role: app, tags: ["app"] }
-    - { role: ssh, tags: ["ssh"] }
+    - { role: deployment, tags: ["deploy"] }

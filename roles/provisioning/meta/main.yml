@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  role_name: provisioning
+  author: ansix
+  description: EC2 infrastructure provisioning and inventory management
+  min_ansible_version: "2.9"
+  platforms:
+    - name: GenericUNIX
+      versions:
+        - all
+
+dependencies:
+  - aws

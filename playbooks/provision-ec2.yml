@@ -7,9 +7,4 @@
     - ../vars/aws-vars.yml
   
   roles:
-    - { role: aws, tags: ["provision"] }
-
-  post_tasks:
-    - name: Refresh inventory to make sure new instances exist in inventory
-      meta: refresh_inventory
-      tags: ["provision"]
+    - { role: provisioning, tags: ["provision"] }

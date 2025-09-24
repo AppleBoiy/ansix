@@ -1,0 +1,23 @@
+---
+# EC2 Provisioning Role
+# Handles complete EC2 infrastructure provisioning including instance creation and inventory management
+
+- name: Include AWS infrastructure provisioning
+  include_role:
+    name: aws
+  tags: ["provision"]
+
+- name: Refresh inventory to make sure new instances exist
+  meta: refresh_inventory
+  tags: ["provision"]
+
+- name: Wait for EC2 instances to be SSH ready
+  wait_for:
+    host: "{{ item }}"
+    port: 22
+    delay: 60
+    timeout: 600
+    state: started
+  loop: "{{ groups['webservers_dynamic'] | default([]) }}"
+  when: groups['webservers_dynamic'] is defined
+  tags: ["provision"]

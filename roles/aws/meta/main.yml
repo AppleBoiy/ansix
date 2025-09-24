@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: aws
+  author: ansix
+  description: AWS EC2 infrastructure provisioning
+  min_ansible_version: "2.9"
+  platforms:
+    - name: GenericUNIX
+      versions:
+        - all
+
+dependencies: []
+
+collections:
+  - amazon.aws

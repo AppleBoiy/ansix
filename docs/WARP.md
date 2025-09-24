@@ -42,23 +42,28 @@ The project follows Ansible's role-based architecture pattern:
 ### Role Architecture
 
 1. **base role**: Foundation server setup
-   - Cross-platform package management (Debian/Ubuntu via apt, RHEL/CentOS via yum)
-   - System updates and essential utilities installation
-   - EPEL repository enablement for RHEL-based systems
+   - Cross-platform package management and system updates
+   - Essential utilities installation
 
 2. **ssh role**: SSH access management
-   - SSH directory creation and permissions (0700)
-   - Public key deployment via authorized_keys
+   - SSH directory creation and key deployment
 
 3. **nginx role**: Web server setup
-   - Nginx installation and service management
-   - Custom configuration deployment with handlers
-   - Configuration validation before restart
+   - Nginx installation, configuration, and service management
 
 4. **app role**: Application deployment
-   - Static website deployment via tarball extraction
-   - File ownership and permission management (www-data)
-   - Alternative GitHub-based deployment option
+   - Static website deployment and file management
+
+5. **aws role**: AWS infrastructure provisioning
+   - EC2 instance creation and security group configuration
+
+6. **provisioning role**: Infrastructure orchestration
+   - Combines AWS provisioning with inventory management
+   - Handles instance readiness and connectivity
+
+7. **deployment role**: Complete server configuration
+   - Orchestrates all configuration roles in proper sequence
+   - Handles system preparation and post-deployment tasks
 
 ### Key Design Patterns
 
@@ -71,16 +76,17 @@ The project follows Ansible's role-based architecture pattern:
 
 ### Core Operations
 ```bash
-make run        # Run complete playbook
+make run        # Run complete deployment
+make deploy     # Run deployment role (all components)
 make check      # Validate syntax
 make dry-run    # Show changes without applying
 make help       # View all commands
 ```
 
-### Role-Specific Execution
+### Individual Role Execution
 ```bash
 make base       # Basic server setup
-make nginx      # Web server setup
+make nginx      # Web server setup  
 make app        # Application deployment
 make ssh        # SSH configuration
 ```
